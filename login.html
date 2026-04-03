@@ -30,24 +30,28 @@
 <button onclick="login()">Se connecter</button>
 
 <script>
-
 function login() {
 
-  let nom = document.getElementById("nom").value.trim();
-  let mdp = document.getElementById("mdp").value.trim();
+  let nom = document.getElementById("nom").value;
+  let mdp = document.getElementById("mdp").value;
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
+  // ✅ Vérification normale
   let user = users.find(u => u.nom === nom && u.mdp === mdp);
 
-  if(user) {
+  // ✅ OU compte par défaut
+  if((nom === "Mike" && mdp === "0110") || user) {
+
     localStorage.setItem("nom", nom);
     window.location.href = "accueil.html";
+
   } else {
     alert("Nom ou mot de passe incorrect");
   }
 }
 </script>
+
 
 </body>
 </html>
