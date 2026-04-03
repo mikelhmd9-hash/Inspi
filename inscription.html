@@ -25,7 +25,6 @@
       margin-top: 10px;
     }
   </style>
-
 </head>
 
 <body>
@@ -33,27 +32,25 @@
 <h2>Créer un compte</h2>
 
 <input type="text" id="nom" placeholder="Ton nom"><br>
-
 <input type="password" id="mdp" placeholder="Mot de passe"><br>
-
 <input type="file" id="photo"><br>
 
-<img id="preview" src="" style="display:none;">
+<img id="preview" style="display:none;">
 
 <button onclick="inscrire()">S'inscrire</button>
 
 <script>
 
-// Aperçu de la photo
+// Aperçu photo
 document.getElementById("photo").addEventListener("change", function() {
   let file = this.files[0];
 
   if(file) {
     let reader = new FileReader();
 
-    reader.onload = function() {
+    reader.onload = function(e) {
       let img = document.getElementById("preview");
-      img.src = reader.result;
+      img.src = e.target.result;
       img.style.display = "block";
     };
 
@@ -61,34 +58,39 @@ document.getElementById("photo").addEventListener("change", function() {
   }
 });
 
-
 function inscrire() {
 
-  let nom = document.getElementById("nom").value;
-  let mdp = document.getElementById("mdp").value;
+  let nom = document.getElementById("nom").value.trim();
+  let mdp = document.getElementById("mdp").value.trim();
   let file = document.getElementById("photo").files[0];
 
-  // Vérification
-  if(nom === "" || mdp === "") return;
-
-  // Si pas de photo
-  if(!file) {
-    enregistrerUtilisateur(nom, mdp, "");
+  if(nom === "" || mdp === "") {
+    alert("Remplis tous les champs !");
     return;
   }
 
-  let reader = new FileReader();
+  let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  reader.onload = function() {
-    let photo = reader.result;
-    enregistrerUtilisateur(nom, mdp, photo);
-  };
+  // éviter doublon
+  let existe = users.find(u => u.nom === nom);
+  if(existe) {
+    alert("Nom déjà utilisé !");
+    return;
+  }
 
-  reader.readAsDataURL(file);
+  if(!file) {
+    enregistrerUtilisateur(nom, mdp, "");
+  } else {
+    let reader = new FileReader();
+
+    reader.onload = function(e) {
+      enregistrerUtilisateur(nom, mdp, e.target.result);
+    };
+
+    reader.readAsDataURL(file);
+  }
 }
 
-
-// Enregistrer utilisateur
 function enregistrerUtilisateur(nom, mdp, photo) {
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
@@ -102,10 +104,11 @@ function enregistrerUtilisateur(nom, mdp, photo) {
   localStorage.setItem("users", JSON.stringify(users));
   localStorage.setItem("nom", nom);
 
-  window.location.href = "./accueil.html";
+  alert("Compte créé !");
+  window.location.href = "connexion.html";
 }
 
-</script> 
+</script>
 
 </body>
-  </html>
+</html>
