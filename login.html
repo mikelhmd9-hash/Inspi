@@ -18,7 +18,6 @@
       font-size: 16px;
     }
   </style>
-
 </head>
 
 <body>
@@ -26,7 +25,6 @@
 <h2>Connexion</h2>
 
 <input type="text" id="nom" placeholder="Ton nom"><br>
-
 <input type="password" id="mdp" placeholder="Mot de passe"><br>
 
 <button onclick="login()">Se connecter</button>
@@ -34,12 +32,11 @@
 <script>
 function login() {
 
-  let nom = document.getElementById("nom").value;
-  let mdp = document.getElementById("mdp").value;
+  let nom = document.getElementById("nom").value.trim();
+  let mdp = document.getElementById("mdp").value.trim();
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  // chercher utilisateur
   let user = users.find(u => u.nom === nom && u.mdp === mdp);
 
   if(user) {
