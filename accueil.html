@@ -43,7 +43,6 @@
       background: #dcf8c6;
     }
   </style>
-
 </head>
 
 <body>
@@ -54,7 +53,6 @@
 <button onclick="afficher('participants')">Participants</button>
 <button onclick="afficher('chat')">Chat</button>
 
-<!-- À PROPOS -->
 <div id="apropos">
   <h3>À propos de moi</h3>
   <p><strong>Nom :</strong> Mike</p>
@@ -62,13 +60,11 @@
   <p>Développeur web débutant passionné.</p>
 </div>
 
-<!-- PARTICIPANTS -->
 <div id="participants" style="display:none;">
   <h3>Participants</h3>
   <div id="liste"></div>
 </div>
 
-<!-- CHAT -->
 <div id="chat" style="display:none;">
   <h3>Chat privé</h3>
 
@@ -82,47 +78,41 @@
 
 <script>
 
-// ======================
-// 🔐 VARIABLES IMPORTANTES
-// ======================
 let nom = localStorage.getItem("nom");
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let admin = "MikehmD";
 
-// sécurité
 if(!nom) {
-  window.location.href = "inscription.html";
+  window.location.href = "connexion.html";
 }
 
-// afficher utilisateur connecté
+// afficher profil
 document.getElementById("profil").innerHTML =
   "Connecté : " + nom;
 
-
-// ======================
-// 🔄 NAVIGATION
-// ======================
+// navigation
 function afficher(section) {
-  document.getElementById("apropos").style.display = "none";
-  document.getElementById("participants").style.display = "none";
-  document.getElementById("chat").style.display = "none";
-
-  document.getElementById(section).style.display = "block";
+  ["apropos","participants","chat"].forEach(id=>{
+    document.getElementById(id).style.display="none";
+  });
+  document.getElementById(section).style.display="block";
 }
 
-
-// ======================
-// 👥 LISTE UTILISATEURS (ADMIN)
-// ======================
+// ================= USERS =================
 let html = "";
 
-if(nom === admin) {
+if(users.length === 0){
+  html = "<p>Aucun utilisateur</p>";
+}
+else if(nom === admin) {
 
   users.forEach(function(u, index) {
+    let photo = u.photo ? u.photo : "https://via.placeholder.com/50";
+
     html += `
       <div style="border:1px solid #ccc; padding:10px; margin:5px;">
         <p>${u.nom}</p>
-        <img src="${u.photo}" width="50">
+        <img src="${photo}">
         <br>
         <button onclick="supprimerUser(${index})">Supprimer</button>
       </div>
@@ -135,12 +125,8 @@ if(nom === admin) {
 
 document.getElementById("liste").innerHTML = html;
 
-
-// ======================
-// 🗑️ SUPPRIMER UTILISATEUR
-// ======================
+// supprimer user
 function supprimerUser(index) {
-
   if(nom !== admin) {
     alert("Accès refusé !");
     return;
@@ -148,35 +134,35 @@ function supprimerUser(index) {
 
   users.splice(index, 1);
   localStorage.setItem("users", JSON.stringify(users));
-
   location.reload();
 }
 
-
-// ======================
-// 👤 SELECT UTILISATEURS
-// ======================
+// ================= SELECT =================
 let select = document.getElementById("destinataire");
 
-users.forEach(function(u) {
-  if(u.nom !== nom) {
+let autres = users.filter(u => u.nom !== nom);
+
+if(autres.length === 0){
+  let option = document.createElement("option");
+  option.textContent = "Aucun utilisateur";
+  select.appendChild(option);
+}
+else{
+  autres.forEach(function(u) {
     let option = document.createElement("option");
     option.value = u.nom;
     option.textContent = u.nom;
     select.appendChild(option);
-  }
-});
+  });
+}
 
-
-// ======================
-// 💬 ENVOYER MESSAGE PRIVÉ
-// ======================
+// ================= CHAT =================
 function envoyer() {
 
-  let message = document.getElementById("message").value;
+  let message = document.getElementById("message").value.trim();
   let dest = document.getElementById("destinataire").value;
 
-  if(message === "") return;
+  if(message === "" || !dest) return;
 
   let chatId = [nom, dest].sort().join("_");
 
@@ -191,10 +177,6 @@ function envoyer() {
   afficherChat();
 }
 
-
-// ======================
-// 💬 AFFICHER CHAT PRIVÉ
-// ======================
 function afficherChat() {
 
   let dest = document.getElementById("destinataire").value;
@@ -214,11 +196,13 @@ function afficherChat() {
   document.getElementById("discussion").innerHTML = html;
 }
 
-// changement utilisateur
 document.getElementById("destinataire")
 .addEventListener("change", afficherChat);
+
+// auto charger chat
+afficherChat();
 
 </script>
 
 </body>
-  </html>
+</html>
