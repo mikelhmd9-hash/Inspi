@@ -41,71 +41,67 @@
 
 <script>
 
+// ✅ AJOUT COMPTE PAR DÉFAUT
+let users = JSON.parse(localStorage.getItem("users")) || [];
+
+// vérifier si Mike existe déjà
+let existe = users.find(u => u.nom === "Mike");
+
+if(!existe){
+  users.push({
+    nom: "Mike",
+    mdp: "0110",
+    photo: ""
+  });
+
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+// ===== TON CODE NORMAL =====
+
 // Aperçu photo
 document.getElementById("photo").addEventListener("change", function() {
   let file = this.files[0];
 
   if(file) {
     let reader = new FileReader();
-
-    reader.onload = function(e) {
+    reader.onload = function() {
       let img = document.getElementById("preview");
-      img.src = e.target.result;
+      img.src = reader.result;
       img.style.display = "block";
     };
-
     reader.readAsDataURL(file);
   }
 });
 
 function inscrire() {
-
-  let nom = document.getElementById("nom").value.trim();
-  let mdp = document.getElementById("mdp").value.trim();
+  let nom = document.getElementById("nom").value;
+  let mdp = document.getElementById("mdp").value;
   let file = document.getElementById("photo").files[0];
 
-  if(nom === "" || mdp === "") {
-    alert("Remplis tous les champs !");
-    return;
-  }
+  if(nom === "" || mdp === "") return;
 
-  let users = JSON.parse(localStorage.getItem("users")) || [];
-
-  // éviter doublon
-  let existe = users.find(u => u.nom === nom);
-  if(existe) {
-    alert("Nom déjà utilisé !");
-    return;
-  }
-
-  if(!file) {
+  if(!file){
     enregistrerUtilisateur(nom, mdp, "");
-  } else {
-    let reader = new FileReader();
-
-    reader.onload = function(e) {
-      enregistrerUtilisateur(nom, mdp, e.target.result);
-    };
-
-    reader.readAsDataURL(file);
+    return;
   }
+
+  let reader = new FileReader();
+  reader.onload = function(){
+    enregistrerUtilisateur(nom, mdp, reader.result);
+  };
+  reader.readAsDataURL(file);
 }
 
 function enregistrerUtilisateur(nom, mdp, photo) {
-
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  users.push({
-    nom: nom,
-    mdp: mdp,
-    photo: photo
-  });
+  users.push({ nom, mdp, photo });
 
   localStorage.setItem("users", JSON.stringify(users));
   localStorage.setItem("nom", nom);
 
-  alert("Compte créé !");
-  window.location.href = "connexion.html";
+  window.location.href = "accueil.html";
 }
 
 </script>
