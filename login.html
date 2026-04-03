@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Connexion</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    input, button {
+      width: 90%;
+      padding: 15px;
+      margin: 10px;
+      font-size: 16px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<h2>Connexion</h2>
+
+<input type="text" id="nom" placeholder="Ton nom"><br>
+
+<input type="password" id="mdp" placeholder="Mot de passe"><br>
+
+<button onclick="login()">Se connecter</button>
+
+<script>
+function login() {
+
+  let nom = document.getElementById("nom").value;
+  let mdp = document.getElementById("mdp").value;
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  // chercher utilisateur
+  let user = users.find(u => u.nom === nom && u.mdp === mdp);
+
+  if(user) {
+    localStorage.setItem("nom", nom);
+    window.location.href = "accueil.html";
+  } else {
+    alert("Nom ou mot de passe incorrect");
+  }
+}
+</script>
+
+</body>
+</html>
