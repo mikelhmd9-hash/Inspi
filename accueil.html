@@ -76,7 +76,29 @@
   <div id="discussion"></div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDSvKtc0AT0_V7__MdPbVeoiFLIw1VDwuw",
+  authDomain: "inspi-da31f.firebaseapp.com",
+  projectId: "inspi-da31f",
+  storageBucket: "inspi-da31f.firebasestorage.app",
+  messagingSenderId: "509371195629",
+  appId: "1:509371195629:web:9e3a270f08d93fad4bece4",
+  measurementId: "G-FPN228HSVQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔐 Vérifier connexion
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  }
+});
 
 let nom = localStorage.getItem("nom");
 let users = JSON.parse(localStorage.getItem("users")) || [];
@@ -201,6 +223,19 @@ document.getElementById("destinataire")
 
 // auto charger chat
 afficherChat();
+
+<button onclick="logout()">Se déconnecter</button>
+
+<script type="module">
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+const auth = getAuth();
+
+window.logout = function() {
+  signOut(auth).then(() => {
+    window.location.href = "login.html";
+  });
+};
 
 </script>
 
