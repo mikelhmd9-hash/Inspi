@@ -39,72 +39,38 @@
 
 <button onclick="inscrire()">S'inscrire</button>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
-// ✅ AJOUT COMPTE PAR DÉFAUT
-let users = JSON.parse(localStorage.getItem("users")) || [];
+const firebaseConfig = {
+  apiKey: "AIzaSyDSvKtc0AT0_V7__MdPbVeoiFLIw1VDwuw",
+  authDomain: "inspi-da31f.firebaseapp.com",
+  projectId: "inspi-da31f",
+  storageBucket: "inspi-da31f.firebasestorage.app",
+  messagingSenderId: "509371195629",
+  appId: "1:509371195629:web:9e3a270f08d93fad4bece4",
+  measurementId: "G-FPN228HSVQ"
+};
 
-// vérifier si Mike existe déjà
-let existe = users.find(u => u.nom === "Mike");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-if(!existe){
-  users.push({
-    nom: "Mike",
-    mdp: "0110",
-    photo: ""
-  });
+window.inscrire = function () {
+  let email = document.getElementById("nom").value;
+  let password = document.getElementById("mdp").value;
 
-  localStorage.setItem("users", JSON.stringify(users));
-}
-
-// ===== TON CODE NORMAL =====
-
-// Aperçu photo
-document.getElementById("photo").addEventListener("change", function() {
-  let file = this.files[0];
-
-  if(file) {
-    let reader = new FileReader();
-    reader.onload = function() {
-      let img = document.getElementById("preview");
-      img.src = reader.result;
-      img.style.display = "block";
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-function inscrire() {
-  let nom = document.getElementById("nom").value;
-  let mdp = document.getElementById("mdp").value;
-  let file = document.getElementById("photo").files[0];
-
-  if(nom === "" || mdp === "") return;
-
-  if(!file){
-    enregistrerUtilisateur(nom, mdp, "");
-    return;
-  }
-
-  let reader = new FileReader();
-  reader.onload = function(){
-    enregistrerUtilisateur(nom, mdp, reader.result);
-  };
-  reader.readAsDataURL(file);
-}
-
-function enregistrerUtilisateur(nom, mdp, photo) {
-  let users = JSON.parse(localStorage.getItem("users")) || [];
-
-  users.push({ nom, mdp, photo });
-
-  localStorage.setItem("users", JSON.stringify(users));
-  localStorage.setItem("nom", nom);
-
-  window.location.href = "accueil.html";
-}
-
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      alert("Compte créé !");
+      window.location.href = "login.html";
+    })
+    .catch((error) => {
+      alert(error.message);
+    });
+};
 </script>
+
 
 </body>
 </html>
