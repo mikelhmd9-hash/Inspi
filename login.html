@@ -29,27 +29,36 @@
 
 <button onclick="login()">Se connecter</button>
 
-<script>
-function login() {
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
-  let nom = document.getElementById("nom").value;
-  let mdp = document.getElementById("mdp").value;
+const firebaseConfig = {
+  apiKey: "AIzaSyDSvKtc0AT0_V7__MdPbVeoiFLIw1VDwuw",
+  authDomain: "inspi-da31f.firebaseapp.com",
+  projectId: "inspi-da31f",
+  storageBucket: "inspi-da31f.firebasestorage.app",
+  messagingSenderId: "509371195629",
+  appId: "1:509371195629:web:9e3a270f08d93fad4bece4",
+  measurementId: "G-FPN228HSVQ"
+};
 
-  let users = JSON.parse(localStorage.getItem("users")) || [];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-  // ✅ Vérification normale
-  let user = users.find(u => u.nom === nom && u.mdp === mdp);
+window.login = function () {
+  let email = document.getElementById("nom").value;
+  let password = document.getElementById("mdp").value;
 
-  // ✅ OU compte par défaut
-  if((nom === "Mike" && mdp === "0110") || user) {
-
-    localStorage.setItem("nom", nom);
-    window.location.href = "accueil.html";
-
-  } else {
-    alert("Nom ou mot de passe incorrect");
-  }
-}
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      alert("Connexion réussie !");
+      window.location.href = "accueil.html";
+    })
+    .catch((error) => {
+      alert("Erreur : " + error.message);
+    });
+};
 </script>
 
 
