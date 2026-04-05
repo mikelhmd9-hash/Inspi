@@ -76,10 +76,14 @@
   <div id="discussion"></div>
 </div>
 
+<!-- BOUTON (dans le HTML, pas JS) -->
+<button onclick="logout()">Se déconnecter</button>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyDSvKtc0AT0_V7__MdPbVeoiFLIw1VDwuw",
   authDomain: "inspi-da31f.firebaseapp.com",
@@ -97,146 +101,19 @@ const auth = getAuth(app);
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
+  } else {
+    // afficher email connecté
+    document.getElementById("profil").innerHTML =
+      "Connecté : " + user.email;
   }
 });
 
-let nom = localStorage.getItem("nom");
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let admin = "MikehmD";
-
-if(!nom) {
-  window.location.href = "connexion.html";
-}
-
-// afficher profil
-document.getElementById("profil").innerHTML =
-  "Connecté : " + nom;
-
-// navigation
-function afficher(section) {
-  ["apropos","participants","chat"].forEach(id=>{
-    document.getElementById(id).style.display="none";
-  });
-  document.getElementById(section).style.display="block";
-}
-
-// ================= USERS =================
-let html = "";
-
-if(users.length === 0){
-  html = "<p>Aucun utilisateur</p>";
-}
-else if(nom === admin) {
-
-  users.forEach(function(u, index) {
-    let photo = u.photo ? u.photo : "https://via.placeholder.com/50";
-
-    html += `
-      <div style="border:1px solid #ccc; padding:10px; margin:5px;">
-        <p>${u.nom}</p>
-        <img src="${photo}">
-        <br>
-        <button onclick="supprimerUser(${index})">Supprimer</button>
-      </div>
-    `;
-  });
-
-} else {
-  html = "<p>Accès réservé à l'administrateur</p>";
-}
-
-document.getElementById("liste").innerHTML = html;
-
-// supprimer user
-function supprimerUser(index) {
-  if(nom !== admin) {
-    alert("Accès refusé !");
-    return;
-  }
-
-  users.splice(index, 1);
-  localStorage.setItem("users", JSON.stringify(users));
-  location.reload();
-}
-
-// ================= SELECT =================
-let select = document.getElementById("destinataire");
-
-let autres = users.filter(u => u.nom !== nom);
-
-if(autres.length === 0){
-  let option = document.createElement("option");
-  option.textContent = "Aucun utilisateur";
-  select.appendChild(option);
-}
-else{
-  autres.forEach(function(u) {
-    let option = document.createElement("option");
-    option.value = u.nom;
-    option.textContent = u.nom;
-    select.appendChild(option);
-  });
-}
-
-// ================= CHAT =================
-function envoyer() {
-
-  let message = document.getElementById("message").value.trim();
-  let dest = document.getElementById("destinataire").value;
-
-  if(message === "" || !dest) return;
-
-  let chatId = [nom, dest].sort().join("_");
-
-  let messages = JSON.parse(localStorage.getItem(chatId)) || [];
-
-  messages.push(nom + " : " + message);
-
-  localStorage.setItem(chatId, JSON.stringify(messages));
-
-  document.getElementById("message").value = "";
-
-  afficherChat();
-}
-
-function afficherChat() {
-
-  let dest = document.getElementById("destinataire").value;
-
-  if(!dest) return;
-
-  let chatId = [nom, dest].sort().join("_");
-
-  let messages = JSON.parse(localStorage.getItem(chatId)) || [];
-
-  let html = "";
-
-  messages.forEach(function(m) {
-    html += "<p>" + m + "</p>";
-  });
-
-  document.getElementById("discussion").innerHTML = html;
-}
-
-document.getElementById("destinataire")
-.addEventListener("change", afficherChat);
-
-// auto charger chat
-afficherChat();
-
-<button onclick="logout()">Se déconnecter</button>
-
-<script type="module">
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-
-const auth = getAuth();
-
+// 🔓 logout
 window.logout = function() {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
-
 </script>
 
 </body>
